@@ -1,5 +1,5 @@
-pub const DUMMY_INPUT: &str = include_str!("data/day2-dummy.txt");
-pub const REAL_INPUT: &str = include_str!("data/day2-real.txt");
+const _DUMMY_INPUT: &str = include_str!("data/day2-dummy.txt");
+const REAL_INPUT: &str = include_str!("data/day2-real.txt");
 
 enum Command {
     Up,
@@ -18,7 +18,7 @@ impl From<&str> for Command {
     }
 }
 
-pub fn solve_part_1(values: &str) -> String {
+pub fn private_solve_part_1(values: &str) -> String {
     let mut x = 0;
     let mut y = 0;
 
@@ -36,7 +36,7 @@ pub fn solve_part_1(values: &str) -> String {
     (x * y).to_string()
 }
 
-pub fn solve_part_2(values: &str) -> String {
+pub fn private_solve_part_2(values: &str) -> String {
     let mut x = 0;
     let mut y = 0;
     let mut aim = 0;
@@ -58,21 +58,40 @@ pub fn solve_part_2(values: &str) -> String {
     (x * y).to_string()
 }
 
-fn main() {
-    println!("{}", solve_part_1(REAL_INPUT));
-    println!("{}", solve_part_2(REAL_INPUT));
+fn _solve_part_1_dummy() -> String {
+    private_solve_part_1(_DUMMY_INPUT)
+}
+
+pub fn solve_part_1_real() -> String {
+    private_solve_part_1(REAL_INPUT)
+}
+
+fn _solve_part_2_dummy() -> String {
+    private_solve_part_2(_DUMMY_INPUT)
+}
+
+pub fn solve_part_2_real() -> String {
+    private_solve_part_2(REAL_INPUT)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{solve_part_1, solve_part_2, DUMMY_INPUT};
+    use super::{_solve_part_1_dummy, _solve_part_2_dummy, solve_part_1_real, solve_part_2_real};
 
     #[test]
-    fn test_part_1() {
-        assert_eq!("150", solve_part_1(DUMMY_INPUT));
+    fn test_part_1_dummy() {
+        assert_eq!("150", _solve_part_1_dummy());
     }
     #[test]
-    fn test_part_2() {
-        assert_eq!("900", solve_part_2(DUMMY_INPUT));
+    fn test_part_2_dummy() {
+        assert_eq!("900", _solve_part_2_dummy());
+    }
+    #[test]
+    fn test_part_1_real() {
+        println!("{}", solve_part_1_real());
+    }
+    #[test]
+    fn test_part_2_real() {
+        println!("{}", solve_part_2_real());
     }
 }

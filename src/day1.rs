@@ -1,7 +1,7 @@
-pub const DUMMY_INPUT: &str = include_str!("data/day1-dummy.txt");
-pub const REAL_INPUT: &str = include_str!("data/day1-real.txt");
+const _DUMMY_INPUT: &str = include_str!("data/day1-dummy.txt");
+const REAL_INPUT: &str = include_str!("data/day1-real.txt");
 
-pub fn solve_part_1(values: &str) -> String {
+fn private_solve_part_1(values: &str) -> String {
     values
         .lines()
         .fold((0, None), |(mut n, prev), line| {
@@ -17,7 +17,7 @@ pub fn solve_part_1(values: &str) -> String {
         .to_string()
 }
 
-pub fn solve_part_2(values: &str) -> String {
+fn private_solve_part_2(values: &str) -> String {
     const WINDOW_SIZE: usize = 3;
     let values = values
         .lines()
@@ -34,21 +34,40 @@ pub fn solve_part_2(values: &str) -> String {
         .to_string()
 }
 
-fn main() {
-    println!("{}", solve_part_1(REAL_INPUT));
-    println!("{}", solve_part_2(REAL_INPUT));
+fn _solve_part_1_dummy() -> String {
+    private_solve_part_1(_DUMMY_INPUT)
+}
+
+pub fn solve_part_1_real() -> String {
+    private_solve_part_1(REAL_INPUT)
+}
+
+fn _solve_part_2_dummy() -> String {
+    private_solve_part_2(_DUMMY_INPUT)
+}
+
+pub fn solve_part_2_real() -> String {
+    private_solve_part_2(REAL_INPUT)
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{solve_part_1, solve_part_2, DUMMY_INPUT};
+    use super::{_solve_part_1_dummy, _solve_part_2_dummy, solve_part_1_real, solve_part_2_real};
 
     #[test]
-    fn test_part_1() {
-        assert_eq!("7", solve_part_1(DUMMY_INPUT));
+    fn test_part_1_dummy() {
+        assert_eq!("7", _solve_part_1_dummy());
     }
     #[test]
-    fn test_part_2() {
-        assert_eq!("5", solve_part_2(DUMMY_INPUT));
+    fn test_part_2_dummy() {
+        assert_eq!("5", _solve_part_2_dummy());
+    }
+    #[test]
+    fn test_part_1_real() {
+        println!("{}", solve_part_1_real());
+    }
+    #[test]
+    fn test_part_2_real() {
+        println!("{}", solve_part_2_real());
     }
 }
