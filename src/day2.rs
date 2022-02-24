@@ -1,20 +1,36 @@
 pub const DUMMY_INPUT: &str = include_str!("data/day2-dummy.txt");
 pub const REAL_INPUT: &str = include_str!("data/day2-real.txt");
 
+enum Command {
+    Up,
+    Down,
+    Forward,
+}
+
+impl From<&str> for Command {
+    fn from(command: &str) -> Self {
+        match command {
+            "up" => Self::Up,
+            "down" => Self::Down,
+            "forward" => Self::Forward,
+            _ => panic!("Not a valid command"),
+        }
+    }
+}
+
 pub fn solve_part_1(values: &str) -> String {
     let mut x = 0;
     let mut y = 0;
 
     values.lines().for_each(|line| {
         let mut iter = line.trim().split_ascii_whitespace();
-        let command = iter.next();
+        let command = iter.next().unwrap();
         let gain = iter.next().unwrap().parse::<i32>().unwrap();
 
-        match command {
-            Some("up") => y -= gain,
-            Some("down") => y += gain,
-            Some("forward") => x += gain,
-            _ => panic!("Not a valid command"),
+        match command.into() {
+            Command::Up => y -= gain,
+            Command::Down => y += gain,
+            Command::Forward => x += gain,
         }
     });
     (x * y).to_string()
@@ -27,17 +43,16 @@ pub fn solve_part_2(values: &str) -> String {
 
     values.lines().for_each(|line| {
         let mut iter = line.trim().split_ascii_whitespace();
-        let command = iter.next();
+        let command = iter.next().unwrap();
         let gain = iter.next().unwrap().parse::<i32>().unwrap();
 
-        match command {
-            Some("up") => aim -= gain,
-            Some("down") => aim += gain,
-            Some("forward") => {
+        match command.into() {
+            Command::Up => aim -= gain,
+            Command::Down => aim += gain,
+            Command::Forward => {
                 x += gain;
                 y += aim * gain;
             }
-            _ => panic!("Not a valid command"),
         }
     });
     (x * y).to_string()
