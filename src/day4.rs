@@ -1,32 +1,14 @@
 const _DUMMY_INPUT: &str = include_str!("data/day4-dummy.txt");
 const REAL_INPUT: &str = include_str!("data/day4-real.txt");
+const BINGO_BOARD_SIZE: usize = 5;
 
-fn private_solve_part_1(values: &str) -> String {
-    let mut lines = values.lines().peekable();
-    if let Some(moves) = lines.next() {
-        let draws = moves
-            .trim()
-            .split(',')
-            .map(|number| number.parse::<i32>().unwrap());
+type BoardCell = (i32, bool);
+type BoardRow = [BoardCell; BINGO_BOARD_SIZE];
+type Board = [BoardRow; BINGO_BOARD_SIZE];
+type Boards = Vec<Board>;
 
-        let mut boards = get_boards(lines);
-
-        for draw in draws {
-            for board in &mut boards {
-                if let Some(score) = play(board, draw) {
-                    return (draw * score).to_string();
-                }
-            }
-        }
-
-        String::new()
-    } else {
-        panic!("No moves found!");
-    }
-}
-
-fn get_boards(mut lines: std::iter::Peekable<std::str::Lines>) -> Vec<Vec<Vec<(i32, bool)>>> {
-    let mut boards = Vec::new();
+fn get_boards(mut lines: std::iter::Peekable<std::str::Lines>) -> Boards {
+    let mut boards: Boards = Vec::new();
 
     loop {
         // Consume empty line
@@ -34,43 +16,33 @@ fn get_boards(mut lines: std::iter::Peekable<std::str::Lines>) -> Vec<Vec<Vec<(i
             break;
         }
         lines.next();
-        boards.push(vec![
-            lines
-                .next()
-                .unwrap()
-                .split_ascii_whitespace()
-                .map(|v| (v.parse::<i32>().unwrap(), false))
-                .collect::<Vec<_>>(),
-            lines
-                .next()
-                .unwrap()
-                .split_ascii_whitespace()
-                .map(|v| (v.parse::<i32>().unwrap(), false))
-                .collect::<Vec<_>>(),
-            lines
-                .next()
-                .unwrap()
-                .split_ascii_whitespace()
-                .map(|v| (v.parse::<i32>().unwrap(), false))
-                .collect::<Vec<_>>(),
-            lines
-                .next()
-                .unwrap()
-                .split_ascii_whitespace()
-                .map(|v| (v.parse::<i32>().unwrap(), false))
-                .collect::<Vec<_>>(),
-            lines
-                .next()
-                .unwrap()
-                .split_ascii_whitespace()
-                .map(|v| (v.parse::<i32>().unwrap(), false))
-                .collect::<Vec<_>>(),
+        boards.push([
+            get_cells(&mut lines),
+            get_cells(&mut lines),
+            get_cells(&mut lines),
+            get_cells(&mut lines),
+            get_cells(&mut lines),
         ]);
     }
     boards
 }
 
-fn play(board: &mut Vec<Vec<(i32, bool)>>, draw: i32) -> Option<i32> {
+fn get_cells(lines: &mut std::iter::Peekable<std::str::Lines>) -> BoardRow {
+    let mut cells = lines
+        .next()
+        .unwrap()
+        .split_ascii_whitespace()
+        .map(|v| (v.parse::<i32>().unwrap(), false));
+    [
+        cells.next().unwrap(),
+        cells.next().unwrap(),
+        cells.next().unwrap(),
+        cells.next().unwrap(),
+        cells.next().unwrap(),
+    ]
+}
+
+fn play(board: &mut Board, draw: i32) -> Option<i32> {
     let mut found = false;
     'outer: for row in board.iter_mut() {
         for cell in row {
@@ -85,77 +57,93 @@ fn play(board: &mut Vec<Vec<(i32, bool)>>, draw: i32) -> Option<i32> {
         return None;
     }
 
-    if has_row_score(board) || has_col_score(board) {
-        Some(get_score_sum(board))
-    } else {
-        None
-    }
+    has_score(board).then(|| get_score_sum(board))
+    // if has_score(&board) {
+    //     Some(get_score_sum(board))
+    // } else {
+    //     None
+    // }
 }
 
-fn get_score_sum(board: &mut Vec<Vec<(i32, bool)>>) -> i32 {
+fn has_score(board: &[BoardRow]) -> bool {
+    for n in 0..BINGO_BOARD_SIZE {
+        let mut r = 0;
+        let mut c = 0;
+        for m in 0..BINGO_BOARD_SIZE {
+            if board[n][m].1 {
+                r += 1
+            }
+            if board[m][n].1 {
+                c += 1
+            }
+        }
+        if r == BINGO_BOARD_SIZE || c == BINGO_BOARD_SIZE {
+            return true;
+        }
+    }
+    false
+}
+
+fn get_score_sum(board: &mut Board) -> i32 {
     board.iter().fold(0, |score, row| {
-        row.iter().fold(
-            score,
-            |score, cell| {
-                if cell.1 {
-                    score
-                } else {
-                    score + cell.0
-                }
-            },
-        )
+        row.iter().fold(score, |score, cell| {
+            // Funcional solution
+            // score + cell.1.then(|| 0).unwrap_or(cell.0)
+            if cell.1 {
+                score
+            } else {
+                score + cell.0
+            }
+        })
     })
 }
 
-fn has_row_score(board: &mut Vec<Vec<(i32, bool)>>) -> bool {
-    board.iter().any(|row| row.iter().all(|cell| cell.1))
+fn parse_bingo_games(values: &str) -> (impl Iterator<Item = i32> + '_, Boards) {
+    let mut lines = values.lines().peekable();
+    let draws = lines
+        .next()
+        .unwrap()
+        .trim()
+        .split(',')
+        .map(|number| number.parse::<i32>().unwrap());
+    let boards = get_boards(lines);
+
+    (draws, boards)
 }
 
-fn has_col_score(board: &mut Vec<Vec<(i32, bool)>>) -> bool {
-    board
-        .iter()
-        .fold([0; 5], |mut matches, row| {
-            for (count, cell) in matches.iter_mut().zip(row.iter()) {
-                if cell.1 {
-                    *count += 1;
-                }
+fn private_solve_part_1(values: &str) -> String {
+    let (draws, mut boards) = parse_bingo_games(values);
+
+    for draw in draws {
+        for board in &mut boards {
+            if let Some(score) = play(board, draw) {
+                return (draw * score).to_string();
             }
-            matches
-        })
-        .iter()
-        .any(|&col| col == 5)
+        }
+    }
+    panic!("No winner!");
 }
 
 fn private_solve_part_2(values: &str) -> String {
-    let mut lines = values.lines().peekable();
-    if let Some(moves) = lines.next() {
-        let draws = moves
-            .trim()
-            .split(',')
-            .map(|number| number.parse::<i32>().unwrap());
+    let (draws, mut boards) = parse_bingo_games(values);
 
-        let mut boards = get_boards(lines);
-
-        let mut final_score = None;
-        for draw in draws {
-            boards = boards
-                .into_iter()
-                .fold(Vec::new(), |mut boards, mut board| {
-                    if let Some(score) = play(&mut board, draw) {
-                        final_score = Some((draw * score).to_string());
-                    } else {
-                        boards.push(board);
-                    }
-                    boards
-                });
-            if boards.is_empty() {
-                return final_score.unwrap();
-            }
+    let mut final_score = None;
+    for draw in draws {
+        boards = boards
+            .into_iter()
+            .fold(Vec::new(), |mut boards, mut board| {
+                if let Some(score) = play(&mut board, draw) {
+                    final_score = Some((draw * score).to_string());
+                } else {
+                    boards.push(board);
+                }
+                boards
+            });
+        if boards.is_empty() {
+            return final_score.unwrap();
         }
-        panic!("No winner!")
-    } else {
-        panic!("No moves found!");
     }
+    panic!("No winner!")
 }
 
 fn _solve_part_1_dummy() -> String {
