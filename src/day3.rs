@@ -71,8 +71,7 @@ fn number_filter(numbers: &mut Vec<Vec<bool>>, pos: usize, criteria: fn(usize, u
         .iter()
         .fold(0, |n, number| if number[pos] { n + 1 } else { n });
     let bit = criteria(num_ones, numbers.len());
-    // numbers.retain()
-    todo!()
+    numbers.retain(|number| number[pos] == bit);
 }
 
 fn _solve_part_1_dummy() -> String {

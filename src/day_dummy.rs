@@ -1,11 +1,11 @@
 const _DUMMY_INPUT: &str = include_str!("data/day_dummy-dummy.txt");
 const REAL_INPUT: &str = include_str!("data/day_dummy-real.txt");
 
-pub fn private_solve_part_1(values: &str) -> String {
+fn private_solve_part_1(values: &str) -> String {
     unimplemented!()
 }
 
-pub fn private_solve_part_2(values: &str) -> String {
+fn private_solve_part_2(values: &str) -> String {
     unimplemented!()
 }
 
