@@ -20,22 +20,18 @@ pub fn private_solve_part_1(values: &str) -> String {
         }
     }
 
-    let mut gamma_rate = String::new();
-    let mut epsilon_rate = String::new();
-
-    for value in counter {
+    let mut gamma_rate = 0;
+    for value in &counter {
         if 2 * value < count_lines {
-            gamma_rate.push('0');
-            epsilon_rate.push('1');
+            gamma_rate = (gamma_rate << 1) + 0;
         } else {
-            gamma_rate.push('1');
-            epsilon_rate.push('0');
+            gamma_rate = (gamma_rate << 1) + 1;
         }
     }
-    let int_gamma_rate = isize::from_str_radix(gamma_rate.as_str(), 2).unwrap();
-    let int_epsilon_rate = isize::from_str_radix(epsilon_rate.as_str(), 2).unwrap();
+    let counter_len = counter.len() as i32;
+    let epsilon_rate = !gamma_rate & ((1 << counter_len) - 1);
 
-    dbg!((int_gamma_rate * int_epsilon_rate).to_string())
+    (gamma_rate * epsilon_rate).to_string()
 }
 
 pub fn private_solve_part_2(values: &str) -> String {
