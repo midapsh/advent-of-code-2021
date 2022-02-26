@@ -7,6 +7,19 @@ type BoardRow = [BoardCell; BINGO_BOARD_SIZE];
 type Board = [BoardRow; BINGO_BOARD_SIZE];
 type Boards = Vec<Board>;
 
+fn parse_bingo_games(values: &str) -> (impl Iterator<Item = i32> + '_, Boards) {
+    let mut lines = values.lines().peekable();
+    let draws = lines
+        .next()
+        .unwrap()
+        .trim()
+        .split(',')
+        .map(|number| number.parse::<i32>().unwrap());
+    let boards = get_boards(lines);
+
+    (draws, boards)
+}
+
 fn get_boards(mut lines: std::iter::Peekable<std::str::Lines>) -> Boards {
     let mut boards: Boards = Vec::new();
 
@@ -96,19 +109,6 @@ fn get_score_sum(board: &mut Board) -> i32 {
             }
         })
     })
-}
-
-fn parse_bingo_games(values: &str) -> (impl Iterator<Item = i32> + '_, Boards) {
-    let mut lines = values.lines().peekable();
-    let draws = lines
-        .next()
-        .unwrap()
-        .trim()
-        .split(',')
-        .map(|number| number.parse::<i32>().unwrap());
-    let boards = get_boards(lines);
-
-    (draws, boards)
 }
 
 fn private_solve_part_1(values: &str) -> String {
