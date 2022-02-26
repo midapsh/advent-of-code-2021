@@ -18,7 +18,7 @@ impl From<&str> for Command {
     }
 }
 
-pub fn private_solve_part_1(values: &str) -> String {
+fn private_solve_part_1(values: &str) -> String {
     let mut x = 0;
     let mut y = 0;
 
@@ -36,7 +36,7 @@ pub fn private_solve_part_1(values: &str) -> String {
     (x * y).to_string()
 }
 
-pub fn private_solve_part_2(values: &str) -> String {
+fn private_solve_part_2(values: &str) -> String {
     let mut x = 0;
     let mut y = 0;
     let mut aim = 0;
