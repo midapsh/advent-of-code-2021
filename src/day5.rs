@@ -1,12 +1,145 @@
 const _DUMMY_INPUT: &str = include_str!("data/day5-dummy.txt");
 const REAL_INPUT: &str = include_str!("data/day5-real.txt");
+const MAX_BOARD_SIZE: usize = 1_000;
+
+#[derive(Debug)]
+struct Coord {
+    x: usize,
+    y: usize,
+}
 
 fn private_solve_part_1(values: &str) -> String {
-    unimplemented!()
+    let mut board = vec![vec![0; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    values.lines().for_each(|line| {
+        let result = line
+            .split("->")
+            .map(|x| {
+                let mut value = x.trim().split(',');
+                (
+                    value.next().unwrap().parse::<usize>().unwrap(),
+                    value.next().unwrap().parse::<usize>().unwrap(),
+                )
+            })
+            .take(2)
+            .collect::<Vec<_>>();
+
+        let start = result[0];
+        let finish = result[1];
+
+        if start.0 == finish.0 {
+            let (s, f) = swap_if_first_lt_other(start.1, finish.1);
+            for index in s..=f {
+                board[start.0][index] += 1;
+            }
+        } else if start.1 == finish.1 {
+            let (s, f) = swap_if_first_lt_other(start.0, finish.0);
+            for index in s..=f {
+                board[index][start.1] += 1;
+            }
+        }
+    });
+    let mut points = 0;
+    for row in board {
+        for cell in row {
+            if 2 <= cell {
+                points += 1;
+            }
+        }
+    }
+    points.to_string()
 }
 
 fn private_solve_part_2(values: &str) -> String {
-    unimplemented!()
+    // let mut board = [[0; 10]; 10];
+    let mut board = vec![vec![0; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    values.lines().for_each(|line| {
+        let result = line
+            .split("->")
+            .map(|x| {
+                let mut value = x.trim().split(',');
+                Coord {
+                    x: value.next().unwrap().parse::<usize>().unwrap(),
+                    y: value.next().unwrap().parse::<usize>().unwrap(),
+                }
+            })
+            .take(2)
+            .collect::<Vec<_>>();
+
+        let start = &result[0];
+        let finish = &result[1];
+
+        if start.x == finish.x {
+            if start.y < finish.y {
+                for index in start.y..=finish.y {
+                    board[start.x][index] += 1;
+                }
+            } else {
+                for index in (finish.y..=start.y).rev() {
+                    board[start.x][index] += 1;
+                }
+            }
+        } else if start.y == finish.y {
+            println!("(1) {:?} -> {:?}", start, finish);
+            if start.x < finish.x {
+                for index in start.x..=finish.x {
+                    board[index][start.y] += 1;
+                }
+            } else {
+                for index in (finish.x..=start.x).rev() {
+                    board[index][start.y] += 1;
+                }
+            }
+        } else if start.x == start.y && finish.x == finish.y {
+            if start.x < finish.x {
+                for index in start.x..=finish.x {
+                    board[index][index] += 1;
+                }
+            } else {
+                for index in finish.x..=start.x {
+                    board[index][index] += 1;
+                }
+            }
+        } else if (finish.x as i16 - start.x as i16).abs()
+            == (finish.y as i16 - start.y as i16).abs()
+        {
+            if start.x < finish.x && start.y < finish.y {
+                for (row_index, col_index) in (start.x..=finish.x).zip(start.y..=finish.y) {
+                    board[row_index][col_index] += 1;
+                }
+            } else if finish.x < start.x && finish.y < start.y {
+                for (row_index, col_index) in
+                    ((finish.x..=start.x).rev()).zip((finish.y..=start.y).rev())
+                {
+                    board[row_index][col_index] += 1;
+                }
+            } else if start.x < finish.x && finish.y < start.y {
+                for (row_index, col_index) in (start.x..=finish.x).zip((finish.y..=start.y).rev()) {
+                    board[row_index][col_index] += 1;
+                }
+            } else {
+                for (row_index, col_index) in (finish.x..=start.x).rev().zip(start.y..=finish.y) {
+                    board[row_index][col_index] += 1;
+                }
+            }
+        }
+    });
+    let mut points = 0;
+    for row in board {
+        for cell in row {
+            if 2 <= cell {
+                points += 1;
+            }
+        }
+    }
+    points.to_string()
+}
+
+fn swap_if_first_lt_other(first: usize, other: usize) -> (usize, usize) {
+    if first < other {
+        (first, other)
+    } else {
+        (other, first)
+    }
 }
 
 fn _solve_part_1_dummy() -> String {
@@ -31,11 +164,22 @@ mod tests {
 
     #[test]
     fn test_part_1_dummy() {
-        assert_eq!("", _solve_part_1_dummy());
+        // There is 5 numbers '2'
+        // .......1..
+        // ..1....1..
+        // ..1....1..
+        // .......1..
+        // .112111211
+        // ..........
+        // ..........
+        // ..........
+        // ..........
+        // 222111....
+        assert_eq!("5", _solve_part_1_dummy());
     }
     #[test]
     fn test_part_2_dummy() {
-        assert_eq!("", _solve_part_2_dummy());
+        assert_eq!("12", _solve_part_2_dummy());
     }
     #[test]
     fn test_part_1_real() {
