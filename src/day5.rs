@@ -9,138 +9,84 @@ struct Coord {
 }
 
 fn private_solve_part_1(values: &str) -> String {
-    let mut board = vec![vec![0; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    // let mut board = [[0 as usize; 10]; 10];
+    let mut board = vec![vec![0 as usize; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
     values.lines().for_each(|line| {
-        let result = line
-            .split("->")
-            .map(|x| {
-                let mut value = x.trim().split(',');
-                Coord {
-                    x: value.next().unwrap().parse::<usize>().unwrap(),
-                    y: value.next().unwrap().parse::<usize>().unwrap(),
-                }
-            })
-            .take(2)
-            .collect::<Vec<_>>();
+        let (start, end) = get_coords(line);
 
-        let start = &result[0];
-        let finish = &result[1];
-
-        if start.x == finish.x {
-            if start.y < finish.y {
-                for index in start.y..=finish.y {
-                    board[start.x][index] += 1;
-                }
-            } else {
-                for index in (finish.y..=start.y).rev() {
-                    board[start.x][index] += 1;
-                }
-            }
-        } else if start.y == finish.y {
-            if start.x < finish.x {
-                for index in start.x..=finish.x {
-                    board[index][start.y] += 1;
-                }
-            } else {
-                for index in (finish.x..=start.x).rev() {
-                    board[index][start.y] += 1;
-                }
+        let dy = end.y as isize - start.y as isize;
+        let dx = end.x as isize - start.x as isize;
+        if dx == 0 || dy == 0 {
+            // Manhattan distance
+            let dist = dx.abs() + dy.abs();
+            let direction_x = dx / dist;
+            let direction_y = dy / dist;
+            let (mut pos_x, mut pos_y) = (start.x, start.y);
+            for _ in 0..=dist {
+                board[pos_x][pos_y] += 1;
+                pos_x = (pos_x as isize + direction_x) as usize;
+                pos_y = (pos_y as isize + direction_y) as usize;
             }
         }
     });
-    let mut points = 0;
-    for row in board {
-        for cell in row {
-            if 2 <= cell {
-                points += 1;
-            }
-        }
-    }
-    points.to_string()
+
+    board
+        .iter()
+        .map(|row| row.iter().filter(|&&cell| 2 <= cell).count())
+        .sum::<usize>()
+        .to_string()
+}
+
+fn get_coords(line: &str) -> (Coord, Coord) {
+    line.split_once("->")
+        .map(|(start, end)| {
+            let start = start.trim().split_once(',').unwrap();
+            let end = end.trim().split_once(',').unwrap();
+            (
+                Coord {
+                    x: start.0.parse::<usize>().unwrap(),
+                    y: start.1.parse::<usize>().unwrap(),
+                },
+                Coord {
+                    x: end.0.parse::<usize>().unwrap(),
+                    y: end.1.parse::<usize>().unwrap(),
+                },
+            )
+        })
+        .unwrap()
 }
 
 fn private_solve_part_2(values: &str) -> String {
-    // let mut board = [[0; 10]; 10];
-    let mut board = vec![vec![0; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    // let mut board = [[0 as usize; 10]; 10];
+    let mut board = vec![vec![0 as usize; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
     values.lines().for_each(|line| {
-        let result = line
-            .split("->")
-            .map(|x| {
-                let mut value = x.trim().split(',');
-                Coord {
-                    x: value.next().unwrap().parse::<usize>().unwrap(),
-                    y: value.next().unwrap().parse::<usize>().unwrap(),
-                }
-            })
-            .take(2)
-            .collect::<Vec<_>>();
+        let (start, end) = get_coords(line);
 
-        let start = &result[0];
-        let finish = &result[1];
-
-        if start.x == finish.x {
-            if start.y < finish.y {
-                for index in start.y..=finish.y {
-                    board[start.x][index] += 1;
-                }
+        let dy = end.y as isize - start.y as isize;
+        let dx = end.x as isize - start.x as isize;
+        // Manhattan distance
+        let dist = (dx.abs() + dy.abs()) / {
+            if dx == 0 || dy == 0 {
+                1
             } else {
-                for index in (finish.y..=start.y).rev() {
-                    board[start.x][index] += 1;
-                }
+                2
             }
-        } else if start.y == finish.y {
-            if start.x < finish.x {
-                for index in start.x..=finish.x {
-                    board[index][start.y] += 1;
-                }
-            } else {
-                for index in (finish.x..=start.x).rev() {
-                    board[index][start.y] += 1;
-                }
-            }
-        } else if start.x == start.y && finish.x == finish.y {
-            if start.x < finish.x {
-                for index in start.x..=finish.x {
-                    board[index][index] += 1;
-                }
-            } else {
-                for index in finish.x..=start.x {
-                    board[index][index] += 1;
-                }
-            }
-        } else if (finish.x as i16 - start.x as i16).abs()
-            == (finish.y as i16 - start.y as i16).abs()
-        {
-            if start.x < finish.x && start.y < finish.y {
-                for (row_index, col_index) in (start.x..=finish.x).zip(start.y..=finish.y) {
-                    board[row_index][col_index] += 1;
-                }
-            } else if finish.x < start.x && finish.y < start.y {
-                for (row_index, col_index) in
-                    ((finish.x..=start.x).rev()).zip((finish.y..=start.y).rev())
-                {
-                    board[row_index][col_index] += 1;
-                }
-            } else if start.x < finish.x && finish.y < start.y {
-                for (row_index, col_index) in (start.x..=finish.x).zip((finish.y..=start.y).rev()) {
-                    board[row_index][col_index] += 1;
-                }
-            } else {
-                for (row_index, col_index) in (finish.x..=start.x).rev().zip(start.y..=finish.y) {
-                    board[row_index][col_index] += 1;
-                }
-            }
+        };
+        let direction_x = dx / dist;
+        let direction_y = dy / dist;
+        let (mut pos_x, mut pos_y) = (start.x, start.y);
+        for _ in 0..=dist {
+            board[pos_x][pos_y] += 1;
+            pos_x = (pos_x as isize + direction_x) as usize;
+            pos_y = (pos_y as isize + direction_y) as usize;
         }
     });
-    let mut points = 0;
-    for row in board {
-        for cell in row {
-            if 2 <= cell {
-                points += 1;
-            }
-        }
-    }
-    points.to_string()
+
+    board
+        .iter()
+        .map(|row| row.iter().filter(|&&cell| 2 <= cell).count())
+        .sum::<usize>()
+        .to_string()
 }
 
 fn _solve_part_1_dummy() -> String {
