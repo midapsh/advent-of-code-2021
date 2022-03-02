@@ -4,18 +4,18 @@ const MAX_BOARD_SIZE: usize = 1_000;
 
 #[derive(Debug)]
 struct Coord {
-    x: usize,
-    y: usize,
+    x: i16,
+    y: i16,
 }
 
 fn private_solve_part_1(values: &str) -> String {
-    // let mut board = [[0 as usize; 10]; 10];
-    let mut board = vec![vec![0 as usize; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    // let mut board = [[0 as i16; 10]; 10];
+    let mut board = vec![vec![0 as i16; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
     values.lines().for_each(|line| {
         let (start, end) = get_coords(line);
 
-        let dy = end.y as isize - start.y as isize;
-        let dx = end.x as isize - start.x as isize;
+        let dy = end.y as i16 - start.y as i16;
+        let dx = end.x as i16 - start.x as i16;
         if dx == 0 || dy == 0 {
             // Manhattan distance
             let dist = dx.abs() + dy.abs();
@@ -23,9 +23,9 @@ fn private_solve_part_1(values: &str) -> String {
             let direction_y = dy / dist;
             let (mut pos_x, mut pos_y) = (start.x, start.y);
             for _ in 0..=dist {
-                board[pos_x][pos_y] += 1;
-                pos_x = (pos_x as isize + direction_x) as usize;
-                pos_y = (pos_y as isize + direction_y) as usize;
+                board[pos_x as usize][pos_y as usize] += 1;
+                pos_x = (pos_x as i16 + direction_x) as i16;
+                pos_y = (pos_y as i16 + direction_y) as i16;
             }
         }
     });
@@ -44,12 +44,12 @@ fn get_coords(line: &str) -> (Coord, Coord) {
             let end = end.trim().split_once(',').unwrap();
             (
                 Coord {
-                    x: start.0.parse::<usize>().unwrap(),
-                    y: start.1.parse::<usize>().unwrap(),
+                    x: start.0.parse::<i16>().unwrap(),
+                    y: start.1.parse::<i16>().unwrap(),
                 },
                 Coord {
-                    x: end.0.parse::<usize>().unwrap(),
-                    y: end.1.parse::<usize>().unwrap(),
+                    x: end.0.parse::<i16>().unwrap(),
+                    y: end.1.parse::<i16>().unwrap(),
                 },
             )
         })
@@ -57,13 +57,13 @@ fn get_coords(line: &str) -> (Coord, Coord) {
 }
 
 fn private_solve_part_2(values: &str) -> String {
-    // let mut board = [[0 as usize; 10]; 10];
-    let mut board = vec![vec![0 as usize; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
+    // let mut board = [[0 as i16; 10]; 10];
+    let mut board = vec![vec![0 as i16; MAX_BOARD_SIZE]; MAX_BOARD_SIZE];
     values.lines().for_each(|line| {
         let (start, end) = get_coords(line);
 
-        let dy = end.y as isize - start.y as isize;
-        let dx = end.x as isize - start.x as isize;
+        let dy = end.y as i16 - start.y as i16;
+        let dx = end.x as i16 - start.x as i16;
         // Manhattan distance
         let dist = (dx.abs() + dy.abs()) / {
             if dx == 0 || dy == 0 {
@@ -76,9 +76,9 @@ fn private_solve_part_2(values: &str) -> String {
         let direction_y = dy / dist;
         let (mut pos_x, mut pos_y) = (start.x, start.y);
         for _ in 0..=dist {
-            board[pos_x][pos_y] += 1;
-            pos_x = (pos_x as isize + direction_x) as usize;
-            pos_y = (pos_y as isize + direction_y) as usize;
+            board[pos_x as usize][pos_y as usize] += 1;
+            pos_x = (pos_x as i16 + direction_x) as i16;
+            pos_y = (pos_y as i16 + direction_y) as i16;
         }
     });
 
