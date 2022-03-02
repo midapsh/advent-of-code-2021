@@ -92,37 +92,46 @@ impl FishStates {
     }
 }
 
-fn private_solve_part_1(values: &str) -> String {
-    let mut lines = values.lines();
-    let mut initial_state = lines
-        .next()
-        .unwrap()
-        .trim()
-        .split(',')
-        .map(|number| number.parse::<u32>().unwrap())
-        .collect::<Vec<_>>();
-
-    for _ in 0..PART_1_NUMBER_OF_DAYS {
-        let mut aux = vec![];
-        let mut count = 0;
-        for fish_state in initial_state.drain(..) {
-            if fish_state == 0 {
-                count += 1;
-                aux.push(6);
-            } else {
-                aux.push(fish_state - 1);
-            }
-        }
-        for _ in 0..count {
-            aux.push(8);
-        }
-        initial_state = aux;
-    }
-
-    initial_state.len().to_string()
+fn private_solve_part_1(values: &str) -> u64 {
+    solution_via_array(values, PART_1_NUMBER_OF_DAYS)
 }
 
-fn private_solve_part_2(values: &str) -> String {
+fn solution_via_array(values: &str, days: usize) -> u64 {
+    (0..days)
+        .into_iter()
+        .fold(get_counters(values), |mut counters, _day| {
+            let gen = counters[0];
+            counters[0] = counters[1];
+            counters[1] = counters[2];
+            counters[2] = counters[3];
+            counters[3] = counters[4];
+            counters[4] = counters[5];
+            counters[5] = counters[6];
+            counters[6] = counters[7] + gen;
+            counters[7] = counters[8];
+            counters[8] = gen;
+            counters
+        })
+        .into_iter()
+        .sum::<u64>()
+}
+
+fn get_counters(values: &str) -> [u64; 9] {
+    values
+        .split(',')
+        .map(|n| n.trim().parse::<usize>().unwrap())
+        .fold([0; 9], |mut counters, n| {
+            counters[n] += 1;
+            counters
+        })
+}
+
+fn private_solve_part_2(values: &str) -> u64 {
+    solution_via_array(values, PART_2_NUMBER_OF_DAYS)
+    // solution_via_struct(values, PART_2_NUMBER_OF_DAYS)
+}
+
+fn solution_via_struct(values: &str, days: usize) -> u64 {
     let mut fish_states = FishStates::new();
     values
         .lines()
@@ -134,8 +143,7 @@ fn private_solve_part_2(values: &str) -> String {
         .for_each(|x| {
             fish_states.add(x, 1);
         });
-
-    for _ in 0..PART_2_NUMBER_OF_DAYS {
+    for _ in 0..days {
         let count = fish_states.0;
         fish_states.insert(0, fish_states.1);
         for fish_state in 0..8 {
@@ -144,23 +152,22 @@ fn private_solve_part_2(values: &str) -> String {
         fish_states.add(6, count);
         fish_states.insert(8, count);
     }
-
-    fish_states.get_total_values().to_string()
+    fish_states.get_total_values()
 }
 
-fn _solve_part_1_dummy() -> String {
+fn _solve_part_1_dummy() -> u64 {
     private_solve_part_1(_DUMMY_INPUT)
 }
 
-pub fn solve_part_1_real() -> String {
+pub fn solve_part_1_real() -> u64 {
     private_solve_part_1(REAL_INPUT)
 }
 
-fn _solve_part_2_dummy() -> String {
+fn _solve_part_2_dummy() -> u64 {
     private_solve_part_2(_DUMMY_INPUT)
 }
 
-pub fn solve_part_2_real() -> String {
+pub fn solve_part_2_real() -> u64 {
     private_solve_part_2(REAL_INPUT)
 }
 
@@ -170,11 +177,11 @@ mod tests {
 
     #[test]
     fn test_part_1_dummy() {
-        assert_eq!("5934", _solve_part_1_dummy());
+        assert_eq!(5934, _solve_part_1_dummy());
     }
     #[test]
     fn test_part_2_dummy() {
-        assert_eq!("26984457539", _solve_part_2_dummy());
+        assert_eq!(26984457539, _solve_part_2_dummy());
     }
     #[test]
     fn test_part_1_real() {
