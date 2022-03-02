@@ -15,26 +15,36 @@ fn private_solve_part_1(values: &str) -> String {
             .split("->")
             .map(|x| {
                 let mut value = x.trim().split(',');
-                (
-                    value.next().unwrap().parse::<usize>().unwrap(),
-                    value.next().unwrap().parse::<usize>().unwrap(),
-                )
+                Coord {
+                    x: value.next().unwrap().parse::<usize>().unwrap(),
+                    y: value.next().unwrap().parse::<usize>().unwrap(),
+                }
             })
             .take(2)
             .collect::<Vec<_>>();
 
-        let start = result[0];
-        let finish = result[1];
+        let start = &result[0];
+        let finish = &result[1];
 
-        if start.0 == finish.0 {
-            let (s, f) = swap_if_first_lt_other(start.1, finish.1);
-            for index in s..=f {
-                board[start.0][index] += 1;
+        if start.x == finish.x {
+            if start.y < finish.y {
+                for index in start.y..=finish.y {
+                    board[start.x][index] += 1;
+                }
+            } else {
+                for index in (finish.y..=start.y).rev() {
+                    board[start.x][index] += 1;
+                }
             }
-        } else if start.1 == finish.1 {
-            let (s, f) = swap_if_first_lt_other(start.0, finish.0);
-            for index in s..=f {
-                board[index][start.1] += 1;
+        } else if start.y == finish.y {
+            if start.x < finish.x {
+                for index in start.x..=finish.x {
+                    board[index][start.y] += 1;
+                }
+            } else {
+                for index in (finish.x..=start.x).rev() {
+                    board[index][start.y] += 1;
+                }
             }
         }
     });
@@ -79,7 +89,6 @@ fn private_solve_part_2(values: &str) -> String {
                 }
             }
         } else if start.y == finish.y {
-            println!("(1) {:?} -> {:?}", start, finish);
             if start.x < finish.x {
                 for index in start.x..=finish.x {
                     board[index][start.y] += 1;
@@ -132,14 +141,6 @@ fn private_solve_part_2(values: &str) -> String {
         }
     }
     points.to_string()
-}
-
-fn swap_if_first_lt_other(first: usize, other: usize) -> (usize, usize) {
-    if first < other {
-        (first, other)
-    } else {
-        (other, first)
-    }
 }
 
 fn _solve_part_1_dummy() -> String {
