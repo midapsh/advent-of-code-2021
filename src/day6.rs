@@ -3,13 +3,13 @@ const REAL_INPUT: &str = include_str!("data/day6-real.txt");
 const PART_1_NUMBER_OF_DAYS: usize = 80;
 const PART_2_NUMBER_OF_DAYS: usize = 256;
 
-struct FishStates(u128, u128, u128, u128, u128, u128, u128, u128, u128);
+struct FishStates(u64, u64, u64, u64, u64, u64, u64, u64, u64);
 
 impl FishStates {
     fn new() -> Self {
         Self(0, 0, 0, 0, 0, 0, 0, 0, 0)
     }
-    fn get(&self, key: usize) -> u128 {
+    fn get(&self, key: usize) -> u64 {
         match key {
             0 => self.0,
             1 => self.1,
@@ -23,7 +23,7 @@ impl FishStates {
             _ => panic!("Not a valid value"),
         }
     }
-    fn insert(&mut self, key: usize, value: u128) {
+    fn insert(&mut self, key: usize, value: u64) {
         match key {
             0 => {
                 self.0 = value;
@@ -55,7 +55,7 @@ impl FishStates {
             _ => panic!("Not a valid value"),
         }
     }
-    fn add(&mut self, key: usize, value: u128) {
+    fn add(&mut self, key: usize, value: u64) {
         match key {
             0 => {
                 self.0 += value;
@@ -87,7 +87,7 @@ impl FishStates {
             _ => panic!("Not a valid value"),
         }
     }
-    fn get_total_values(self) -> u128 {
+    fn get_total_values(self) -> u64 {
         self.0 + self.1 + self.2 + self.3 + self.4 + self.5 + self.6 + self.7 + self.8
     }
 }
