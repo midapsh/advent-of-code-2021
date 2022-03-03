@@ -18,10 +18,12 @@ fn main() -> anyhow::Result<()> {
         "3-2" => println!("{}", p3_2()),
         "4-1" => println!("{}", p4_1()),
         "4-2" => println!("{}", p4_2()),
-        "5-1" => println!("{}", p4_1()),
-        "5-2" => println!("{}", p4_2()),
-        "6-1" => println!("{}", p4_1()),
-        "6-2" => println!("{}", p4_2()),
+        "5-1" => println!("{}", p5_1()),
+        "5-2" => println!("{}", p5_2()),
+        "6-1" => println!("{}", p6_1()),
+        "6-2" => println!("{}", p6_2()),
+        "7-1" => println!("{}", p7_1()),
+        "7-2" => println!("{}", p7_2()),
         _ => return Err(anyhow!("Unknown puzzle")),
     }
     Ok(())
