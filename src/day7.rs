@@ -3,6 +3,50 @@ use std::cmp::Ordering;
 const _DUMMY_INPUT: &str = include_str!("data/day7-dummy.txt");
 const REAL_INPUT: &str = include_str!("data/day7-real.txt");
 
+fn private_solve_part_1(values: &str) -> String {
+    let positions = values
+        .trim()
+        .split(',')
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+
+    // The median minimizes the sum of absolute deviations
+    // https://math.stackexchange.com/questions/113270/the-median-minimizes-the-sum-of-absolute-deviations-the-ell-1-norm
+    if let Some(med) = median(&positions) {
+        positions
+            .iter()
+            .map(|&x| (med - x).abs())
+            .sum::<i32>()
+            .to_string()
+    } else {
+        panic!("Median not found")
+    }
+}
+
+fn private_solve_part_2(values: &str) -> String {
+    let positions = values
+        .trim()
+        .split(',')
+        .map(|x| x.parse::<i32>().unwrap())
+        .collect::<Vec<_>>();
+
+    // The mean minimizes the sum of squared deviations
+    // https://math.stackexchange.com/questions/2554243/understanding-the-mean-minimizes-the-mean-squared-error
+    if let Some(result) = mean(&positions) {
+        let score = [
+            optimize(&positions, if result > 0 { result - 1 } else { 0 }),
+            optimize(&positions, result),
+            optimize(&positions, result + 1),
+        ];
+
+        score.iter().min().unwrap().to_string()
+    } else {
+        panic!("Mean not found")
+    }
+}
+
+// Part 1
+
 fn partition(data: &[i32]) -> Option<(Vec<i32>, i32, Vec<i32>)> {
     match data.len() {
         0 => None,
@@ -60,43 +104,7 @@ fn median(data: &[i32]) -> Option<i32> {
     }
 }
 
-fn private_solve_part_1(values: &str) -> String {
-    let positions = values
-        .trim()
-        .split(',')
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect::<Vec<_>>();
-
-    if let Some(med) = median(&positions) {
-        positions
-            .iter()
-            .map(|&x| (med - x).abs())
-            .sum::<i32>()
-            .to_string()
-    } else {
-        panic!("Median not found")
-    }
-}
-
-fn private_solve_part_2(values: &str) -> String {
-    let positions = values
-        .trim()
-        .split(',')
-        .map(|x| x.parse::<i32>().unwrap())
-        .collect::<Vec<_>>();
-
-    if let Some(result) = mean(&positions) {
-        let score = [
-            optimize(&positions, if result > 0 { result - 1 } else { 0 }),
-            optimize(&positions, result),
-            optimize(&positions, result + 1),
-        ];
-
-        score.iter().min().unwrap().to_string()
-    } else {
-        panic!("Mean not found")
-    }
-}
+// Part 2
 
 fn mean(data: &[i32]) -> Option<i32> {
     let sum = data.iter().sum::<i32>() as f32;
