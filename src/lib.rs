@@ -1,4 +1,5 @@
 mod day1;
+mod day10;
 mod day2;
 mod day3;
 mod day4;
@@ -17,3 +18,5 @@ pub use day6::{solve_part_1_real as p6_1, solve_part_2_real as p6_2};
 pub use day7::{solve_part_1_real as p7_1, solve_part_2_real as p7_2};
 pub use day8::{solve_part_1_real as p8_1, solve_part_2_real as p8_2};
 pub use day9::{solve_part_1_real as p9_1, solve_part_2_real as p9_2};
+//
+pub use day10::{solve_part_1_real as p10_1, solve_part_2_real as p10_2};

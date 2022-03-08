@@ -28,6 +28,8 @@ fn main() -> anyhow::Result<()> {
         "8-2" => println!("{}", p8_2()),
         "9-1" => println!("{}", p9_1()),
         "9-2" => println!("{}", p9_2()),
+        "10-1" => println!("{}", p10_1()),
+        "10-2" => println!("{}", p10_2()),
         _ => return Err(anyhow!("Unknown puzzle")),
     }
     Ok(())
