@@ -122,7 +122,7 @@ fn private_solve_part_2(values: &str) -> String {
                     c if delimiters.last() == Some(&c) => {
                         delimiters.pop();
                     }
-                    ')' | ']' | '}' | '>' => return 0,
+                    ')' | ']' | '}' | '>' => return None,
                     _ => panic!("Bad delimiter input!"),
                 }
             }
@@ -137,9 +137,9 @@ fn private_solve_part_2(values: &str) -> String {
                     _ => panic!("Bad score input!"),
                 }
             }
-            score
+            Some(score)
         })
-        .filter(|&score| score != 0)
+        .flatten()
         .collect::<Vec<_>>();
 
     median(&scores).unwrap().to_string()
