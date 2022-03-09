@@ -22,6 +22,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("9-2", |b| b.iter(p9_2));
     c.bench_function("10-1", |b| b.iter(p10_1));
     c.bench_function("10-2", |b| b.iter(p10_2));
+    c.bench_function("11-1", |b| b.iter(p11_1));
+    c.bench_function("11-2", |b| b.iter(p11_2));
 }
 
 criterion_group!(benches, criterion_benchmark);
