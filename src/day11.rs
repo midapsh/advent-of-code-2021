@@ -72,7 +72,64 @@ fn private_solve_part_1(values: &str) -> String {
 }
 
 fn private_solve_part_2(values: &str) -> String {
-    unimplemented!()
+    let mut grid = values
+        .lines()
+        .map(|line| {
+            line.chars()
+                .map(|x| x.to_digit(10).unwrap() as i32)
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+
+    let row_size = grid.len() as isize;
+    let col_size = grid[0].len() as isize;
+    let y_range = 0..row_size;
+    let x_range = 0..col_size;
+
+    for round in 1_usize.. {
+        let mut flashes = 0;
+        let mut boundary = HashSet::new();
+        for (y, row) in grid.iter_mut().enumerate() {
+            for (x, col) in row.iter_mut().enumerate() {
+                if 9 <= *col {
+                    *col = 0;
+                    flashes += 1;
+                    boundary.insert((x as isize, y as isize));
+                } else {
+                    *col += 1;
+                }
+            }
+        }
+
+        while !boundary.is_empty() {
+            let point = *boundary.iter().next().unwrap();
+            boundary.remove(&point);
+            let (x, y) = point;
+            for n in &NEIGHBORS {
+                let y2 = y + n.0;
+                let x2 = x + n.1;
+                if y_range.contains(&y2) && x_range.contains(&x2) {
+                    let n_energy = &mut grid[y2 as usize][x2 as usize];
+                    match *n_energy {
+                        0 => {}
+                        9 => {
+                            *n_energy = 0;
+                            flashes += 1;
+                            boundary.insert((x2, y2));
+                        }
+                        _ => {
+                            *n_energy += 1;
+                        }
+                    }
+                }
+            }
+        }
+        if flashes == (row_size * col_size) {
+            return round.to_string();
+        }
+    }
+
+    unreachable!("Should find the answer before the end of `usize` max lenght");
 }
 
 fn _solve_part_1_dummy() -> String {
@@ -101,7 +158,7 @@ mod tests {
     }
     #[test]
     fn test_part_2_dummy() {
-        assert_eq!("", _solve_part_2_dummy());
+        assert_eq!("195", _solve_part_2_dummy());
     }
     #[test]
     fn test_part_1_real() {
