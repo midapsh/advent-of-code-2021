@@ -1,4 +1,4 @@
-use std::{collections::HashSet, ops::RangeBounds};
+use std::collections::HashSet;
 
 const _DUMMY_INPUT: &str = include_str!("data/day11-dummy.txt");
 const REAL_INPUT: &str = include_str!("data/day11-real.txt");
@@ -47,9 +47,9 @@ fn private_solve_part_1(values: &str) -> String {
             let point = *boundary.iter().next().unwrap();
             boundary.remove(&point);
             let (x, y) = point;
-            for n in &NEIGHBORS {
-                let y2 = y + n.0;
-                let x2 = x + n.1;
+            for (nx, ny) in &NEIGHBORS {
+                let y2 = y + ny;
+                let x2 = x + nx;
                 if y_range.contains(&y2) && x_range.contains(&x2) {
                     let n_energy = &mut grid[y2 as usize][x2 as usize];
                     match *n_energy {
@@ -105,9 +105,9 @@ fn private_solve_part_2(values: &str) -> String {
             let point = *boundary.iter().next().unwrap();
             boundary.remove(&point);
             let (x, y) = point;
-            for n in &NEIGHBORS {
-                let y2 = y + n.0;
-                let x2 = x + n.1;
+            for (nx, ny) in &NEIGHBORS {
+                let y2 = y + ny;
+                let x2 = x + nx;
                 if y_range.contains(&y2) && x_range.contains(&x2) {
                     let n_energy = &mut grid[y2 as usize][x2 as usize];
                     match *n_energy {
