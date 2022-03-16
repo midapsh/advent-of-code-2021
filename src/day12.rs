@@ -3,6 +3,13 @@ const _DUMMY1_INPUT: &str = include_str!("data/day12-dummy1.txt");
 const _DUMMY2_INPUT: &str = include_str!("data/day12-dummy2.txt");
 const REAL_INPUT: &str = include_str!("data/day12-real.txt");
 
+enum Room<'a> {
+    Big(&'a str),
+    End,
+    Small(&'a str),
+    Start,
+}
+
 fn private_solve_part_1(values: &str) -> String {
     unimplemented!()
 }
